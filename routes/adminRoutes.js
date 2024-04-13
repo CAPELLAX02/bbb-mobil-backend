@@ -24,36 +24,32 @@ const router = express.Router();
 // Authentication Routes for Admin Users
 router.post('/auth', authAdminUser);
 router.post('/logout', logoutAdminUser);
-router.get('/profile', protect, getAdminProfile);
+router.get('/profile', getAdminProfile);
 
 // User Routes for Admin Users
-router.get('/users', protect, getAllUsers);
-router.get('/users/:id', protect, getUserById);
-router.delete('/users/:id', protect, deleteUser);
-router.put('/users/:id/ban', protect, banUser);
-router.put('/users/:id/unban', protect, unbanUser);
+router.get('/users', getAllUsers);
+router.get('/users/:id', getUserById);
+router.delete('/users/:id', deleteUser);
+router.put('/users/:id/ban', banUser);
+router.put('/users/:id/unban', unbanUser);
 
 // Issue Routes for Admin Users
-router.get('/issues', protect, getAllIssues);
-router.post('/issues/:id/solve', protect, solveIssue);
-router.post('/issues/:id/unsolve', protect, unsolveIssue);
-router.delete('/issues/:id', protect, deleteIssue);
+router.get('/issues', getAllIssues);
+router.post('/issues/:id/solve', solveIssue);
+router.post('/issues/:id/unsolve', unsolveIssue);
+router.delete('/issues/:id', deleteIssue);
 
 // Feedback and Notification Routes for Admin Users
-router.post('/issues/:id/send-notification', protect, sendNotification);
+router.post('/issues/:id/send-notification', sendNotification);
 
 router.post(
   '/issues/:id/send-positive-feedback',
-  protect,
-  admin,
   // uploadFeedback.single('feedbackPhoto'),
   sendPositiveFeedback
 );
 
 router.post(
   '/issues/:id/send-negative-feedback',
-  protect,
-  admin,
   // uploadFeedback.single('feedbackPhoto'),
   sendNegativeFeedback
 );
