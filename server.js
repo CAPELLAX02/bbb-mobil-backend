@@ -1,9 +1,9 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
+// dotenv.config();
 import cookieParser from 'cookie-parser';
-dotenv.config();
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import issueRoutes from './routes/issueRoutes.js';
