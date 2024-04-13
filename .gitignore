@@ -6,3 +6,7 @@
 
 # Windows system files
 Thumbs.db
+
+.env
+
+package-lock.json
