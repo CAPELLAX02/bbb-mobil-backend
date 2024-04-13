@@ -24,23 +24,23 @@ const router = express.Router();
 // Authentication Routes for Admin Users
 router.post('/auth', authAdminUser);
 router.post('/logout', logoutAdminUser);
-router.get('/profile', protect, admin, getAdminProfile);
+router.get('/profile', protect, getAdminProfile);
 
 // User Routes for Admin Users
-router.get('/users', protect, admin, getAllUsers);
-router.get('/users/:id', protect, admin, getUserById);
-router.delete('/users/:id', protect, admin, deleteUser);
-router.put('/users/:id/ban', protect, admin, banUser);
-router.put('/users/:id/unban', protect, admin, unbanUser);
+router.get('/users', protect, getAllUsers);
+router.get('/users/:id', protect, getUserById);
+router.delete('/users/:id', protect, deleteUser);
+router.put('/users/:id/ban', protect, banUser);
+router.put('/users/:id/unban', protect, unbanUser);
 
 // Issue Routes for Admin Users
-router.get('/issues', protect, admin, getAllIssues);
-router.post('/issues/:id/solve', protect, admin, solveIssue);
-router.post('/issues/:id/unsolve', protect, admin, unsolveIssue);
-router.delete('/issues/:id', protect, admin, deleteIssue);
+router.get('/issues', protect, getAllIssues);
+router.post('/issues/:id/solve', protect, solveIssue);
+router.post('/issues/:id/unsolve', protect, unsolveIssue);
+router.delete('/issues/:id', protect, deleteIssue);
 
 // Feedback and Notification Routes for Admin Users
-router.post('/issues/:id/send-notification', protect, admin, sendNotification);
+router.post('/issues/:id/send-notification', protect, sendNotification);
 
 router.post(
   '/issues/:id/send-positive-feedback',
