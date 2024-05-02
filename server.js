@@ -1,8 +1,8 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv'; // import when NODE_ENV: 'development'
-dotenv.config(); // use when NODE_ENV: 'development'
+// import dotenv from 'dotenv'; // import when NODE_ENV: 'development'
+// dotenv.config(); // use when NODE_ENV: 'development'
 import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
