@@ -16,7 +16,6 @@ const protect = asyncHandler(async (req, res, next) => {
   if (req.cookies && req.cookies['adminToken']) {
     token = req.cookies['adminToken'];
     try {
-      // Admin token'ı doğrulama
       const decoded = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
       req.user = await User.findById(decoded.id).select('-password');
       next();
@@ -33,7 +32,7 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       // Kullanıcı token'ı doğrulama
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Burada JWT_SECRET kullanıldığına dikkat edin
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select('-password');
       next();
     } catch (error) {

@@ -37,37 +37,104 @@ const authUser = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const registerUser = asyncHandler(async (req, res) => {
+  // const { name, surname, phone, email, password } = req.body;
+  // const userExists = await User.findOne({ email });
+  // if (userExists) {
+  //   res.status(400);
+  //   throw new Error('Bu e-posta adresi zaten kayıtlı.');
+  // }
+  // const emailVerificationCode = Math.random().toString().slice(2, 8);
+  // const emailVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
+  // const user = await User.create({
+  //   name,
+  //   surname,
+  //   phone,
+  //   email,
+  //   password, // Password hashing should be handled by your User model's middleware
+  //   emailVerificationCode,
+  //   emailVerificationCodeExpires,
+  //   isEmailVerified: false, // Initially false
+  // });
+  // if (user) {
+  //   await sendVerificationEmail(user.email, emailVerificationCode);
+  //   res.status(201).json({
+  //     message: 'Doğrulama kodu gönderildi. Lütfen e-postanızı kontrol edin.',
+  //   });
+  // } else {
+  //   res.status(400);
+  //   throw new Error('Kullanıcı oluşturulamadı.');
+  // }
   const { name, surname, phone, email, password } = req.body;
-
-  const userExists = await User.findOne({ email });
-  if (userExists) {
+  let user = await User.findOne({ email });
+  if (user && user.isEmailVerified) {
     res.status(400);
-    throw new Error('Bu e-posta adresi zaten kayıtlı.');
+    throw new Error('this account already in use.');
   }
-
   const emailVerificationCode = Math.random().toString().slice(2, 8);
   const emailVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
-
-  const user = await User.create({
-    name,
-    surname,
-    phone,
-    email,
-    password, // Password hashing should be handled by your User model's middleware
-    emailVerificationCode,
-    emailVerificationCodeExpires,
-    isEmailVerified: false, // Initially false
-  });
-
-  if (user) {
-    await sendVerificationEmail(user.email, emailVerificationCode);
-    res.status(201).json({
-      message: 'Doğrulama kodu gönderildi. Lütfen e-postanızı kontrol edin.',
+  if (!user) {
+    user = await User.create({
+      name,
+      surname,
+      phone,
+      email,
+      password,
+      isEmailVerified: false,
     });
-  } else {
-    res.status(400);
-    throw new Error('Kullanıcı oluşturulamadı.');
   }
+  user.emailVerificationCode = emailVerificationCode;
+  user.emailVerificationCodeExpires = emailVerificationCodeExpires;
+  await user.save();
+  await sendVerificationEmail(user.email, emailVerificationCode);
+  res.status(201).json({
+    message: `email verification code sent to ${user.email}.`,
+  });
+});
+
+/**
+ * @desc    Send verification mail to user
+ * @route   POST /api/users/verify-email
+ * @access  Private
+ */
+const verifyEmail = asyncHandler(async (req, res) => {
+  // const { email, verificationCode } = req.body;
+
+  // const user = await User.findOne({
+  //   email,
+  //   emailVerificationCode: verificationCode,
+  //   emailVerificationCodeExpires: { $gt: Date.now() },
+  // });
+
+  // if (user) {
+  //   user.isEmailVerified = true;
+  //   user.emailVerificationCode = undefined; // Clear verification code
+  //   user.emailVerificationCodeExpires = undefined; // Clear code expiration
+  //   await user.save();
+
+  //   res.json({ message: 'E-posta başarıyla doğrulandı!' });
+  // } else {
+  //   res
+  //     .status(400)
+  //     .json({ message: 'Geçersiz veya süresi dolmuş doğrulama kodu!' });
+  // }
+  const { email, verificationCode } = req.body;
+  const user = await User.findOne({
+    email,
+    emailVerificationCode: verificationCode,
+    emailVerificationCodeExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    res.status(400).json({
+      message: 'invalid or expired verification code.',
+    });
+  }
+  user.isEmailVerified = true;
+  user.emailVerificationCode = undefined;
+  user.emailVerificationCodeExpires = undefined;
+  await user.save();
+  res.json({
+    message: 'e-mail verified successfully.',
+  });
 });
 
 /**
@@ -131,34 +198,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   } else {
     res.status(404);
     throw new Error('Kullanıcı bulunamadı.');
-  }
-});
-
-/**
- * @desc    Send verification mail to user
- * @route   POST /api/users/verify-email
- * @access  Private
- */
-const verifyEmail = asyncHandler(async (req, res) => {
-  const { email, verificationCode } = req.body;
-
-  const user = await User.findOne({
-    email,
-    emailVerificationCode: verificationCode,
-    emailVerificationCodeExpires: { $gt: Date.now() },
-  });
-
-  if (user) {
-    user.isEmailVerified = true;
-    user.emailVerificationCode = undefined; // Clear verification code
-    user.emailVerificationCodeExpires = undefined; // Clear code expiration
-    await user.save();
-
-    res.json({ message: 'E-posta başarıyla doğrulandı!' });
-  } else {
-    res
-      .status(400)
-      .json({ message: 'Geçersiz veya süresi dolmuş doğrulama kodu!' });
   }
 });
 
