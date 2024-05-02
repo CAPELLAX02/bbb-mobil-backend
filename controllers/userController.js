@@ -157,6 +157,7 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
   user.emailVerificationCode = emailVerificationCode;
   user.emailVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
   await user.save();
+  await sendVerificationCode(user.email, emailVerificationCode);
   res.status(200).json({
     message: `verification code re-sent to ${user.email}.`,
   });
