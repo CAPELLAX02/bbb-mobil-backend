@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const sendVerificationEmail = async (userEmail, verificationCode) => {
+const sendVerificationCode = async (userEmail, verificationCode) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -24,4 +24,4 @@ const sendVerificationEmail = async (userEmail, verificationCode) => {
   console.log(`Doğrulama e-postası ${userEmail} adresine gönderildi.`);
 };
 
-export default sendVerificationEmail;
+export default sendVerificationCode;

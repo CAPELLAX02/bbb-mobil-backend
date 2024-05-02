@@ -1,7 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
-import sendVerificationEmail from '../utils/emailVerificationService.js';
+import sendVerificationCode from '../utils/emailVerificationService.js';
 import sendPasswordResetEmail from '../utils/forgotPasswordService.js';
 
 /**
@@ -56,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
   //   isEmailVerified: false, // Initially false
   // });
   // if (user) {
-  //   await sendVerificationEmail(user.email, emailVerificationCode);
+  //   await sendVerificationCode(user.email, emailVerificationCode);
   //   res.status(201).json({
   //     message: 'Doğrulama kodu gönderildi. Lütfen e-postanızı kontrol edin.',
   //   });
@@ -85,7 +85,7 @@ const registerUser = asyncHandler(async (req, res) => {
   user.emailVerificationCode = emailVerificationCode;
   user.emailVerificationCodeExpires = emailVerificationCodeExpires;
   await user.save();
-  await sendVerificationEmail(user.email, emailVerificationCode);
+  await sendVerificationCode(user.email, emailVerificationCode);
   res.status(201).json({
     message: `email verification code sent to ${user.email}.`,
   });
@@ -134,6 +134,31 @@ const verifyEmail = asyncHandler(async (req, res) => {
   await user.save();
   res.json({
     message: 'e-mail verified successfully.',
+  });
+});
+
+/**
+ * @desc    Resend email verification code to user
+ * @route   POST /api/users/resend-verification-code
+ * @access  Public
+ */
+const resendVerificationCode = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(404);
+    throw new Error('user not found.');
+  }
+  if (user.isEmailVerified) {
+    res.status(400);
+    throw new Error('account already verified');
+  }
+  const emailVerificationCode = Math.random().toString().slice(2, 8);
+  user.emailVerificationCode = emailVerificationCode;
+  user.emailVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
+  await user.save();
+  res.status(200).json({
+    message: `verification code re-sent to ${user.email}.`,
   });
 });
 
@@ -302,4 +327,5 @@ export {
   sendForgotPasswordEmail,
   resetPassword,
   updateUserPushToken,
+  resendVerificationCode,
 };

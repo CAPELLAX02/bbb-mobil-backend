@@ -9,6 +9,7 @@ import {
   sendForgotPasswordEmail,
   resetPassword,
   updateUserPushToken,
+  resendVerificationCode,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -26,6 +27,8 @@ router
   .put(protect, updateUserProfile); // private (protected)
 
 router.post('/verify-email', verifyEmail); // public
+
+router.post('/resend-verification-code', resendVerificationCode); // public
 
 router.post('/forgot-password', sendForgotPasswordEmail); // public
 
