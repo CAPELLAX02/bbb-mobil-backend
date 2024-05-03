@@ -37,7 +37,14 @@ const upload = multer({
 
 router.post(
   '/',
-  upload.fields([{ name: 'image', maxCount: 1 }]),
+  (req, res, next) => {
+    upload.fields([{ name: 'image', maxCount: 1 }])(req, res, function (err) {
+      if (err) {
+        return res.status(500).send({ message: err.message });
+      }
+      next();
+    });
+  },
   (req, res) => {
     if (req.files && req.files.image) {
       const imagePath = `${req.protocol}://${req.get('host')}/${
@@ -46,7 +53,7 @@ router.post(
       console.log('Uploaded file path:', imagePath);
       res.send({
         message: 'Image uploaded successfully',
-        imagePath: imagePath, // Sunucu tarafından oluşturulan resim yolu
+        imagePath: imagePath,
       });
     } else {
       console.log('No file uploaded.');
